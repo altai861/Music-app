@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Music Streaming App</title>
+</head>
+<body>
+    <h2>What is up? Wanna listen some music?</h2>
+    <form id="addSongForm">
+        <input type="text" name="songTitle" id="songTitle" required>
+        <input type="text" name="artistName" id="artistName" required>
+        <input type="text" name="genre" id="genre" required>
+        <input type="date" name="releaseDate" id="releaseDate" required>
+        <input type="file" name="songFile" id="songFile" accept="audio/*" required>
+        <input type="submit" value="Add">
+    </form>
+
+    <script>
+        const form = document.getElementById("addSongForm");
+
+        const uploadSong = async () => {
+            const songTitle = document.getElementById("songTitle").value;
+            const artistName = document.getElementById("artistName").value;
+            const genre = document.getElementById("genre").value;
+            const releaseDate = document.getElementById("releaseDate").value;
+            const songFile = document.getElementById("songFile").files[0];
+
+            const formData = new FormData();
+            formData.append("songTitle", songTitle);
+            formData.append("artistName", artistName);
+            formData.append("genre", genre);
+            formData.append("releaseDate", releaseDate);
+            formData.append("songFile", songFile);
+
+            const response = await fetch('http://localhost:3500/song', {
+                method: 'POST',
+                body: formData
+            });
+
+            const json = await response.json();
+
+            console.log(json);
+        }
+
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+            uploadSong();
+        })
+    </script>
+</body>
+</html>
