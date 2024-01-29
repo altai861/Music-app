@@ -6,7 +6,7 @@ const fileUpload = require("express-fileupload")
 const { fileSizeLimiter } = require("../middleware/fileSizeLimiter.js");
 const { filesPayloadExists } = require("../middleware/filesPayloadExists.js");
 
-//router.use(authenticateUser);
+router.use(authenticateUser);
 
 router.route('/')
     .post(

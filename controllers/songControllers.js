@@ -1,10 +1,12 @@
 const Song = require("../models/Song");
 const User = require("../models/User");
 const { uploadFile } = require("../middleware/songUpload.js")
+const { replaceSpacesWithHyphens } = require("../util/songNamePreparer.js")
+
 
 async function addSong(req, res) {
-    // const userId = req.user.userId
-    const userId = '65a38a22b929628dfb89ecd6'
+    const userId = req.user.userId
+    //const userId = '65a38a22b929628dfb89ecd6'
     const { songTitle, artistName, releaseDate, genre} = req.body;
     const songFile = req.files.songFile;
     console.log(songFile)
@@ -14,7 +16,8 @@ async function addSong(req, res) {
     }
 
     try {
-        const { status, bucketName, gcsFilePath } = await uploadFile(songFile, `${songTitle}-${artistName}-${userId}.mp3`);
+
+        const { status, bucketName, gcsFilePath } = await uploadFile(songFile, `${replaceSpacesWithHyphens(songTitle)}-${replaceSpacesWithHyphens(artistName)}-${userId}.mp3`);
         if (status) {
             const newSong = new Song({
                 songTitle,
@@ -38,9 +41,19 @@ async function addSong(req, res) {
 }
 
 async function getSongs(req, res) {
-    const songs = await Song.find().lean();
-    return res.json(songs);
+    try {
+        // Use Mongoose to find all documents in the "Song" collection
+        const songs = await Song.find().lean();
+
+        // Return the songs as a JSON response
+        return res.json(songs);
+    } catch (error) {
+        // Handle errors, such as database errors
+        console.error('Error fetching songs:', error);
+        return res.status(500).json({ error: 'Internal Server Error' });
+    }
 }
+
 
 
 module.exports = {
